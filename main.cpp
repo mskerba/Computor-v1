@@ -3,7 +3,7 @@
 
 int main(int ac , char **av)
 {
-    if (!ac) {
+    if (ac == 1) {
         std::cout << "Adding the argument!"<< std::endl;
         return 0;
     }
