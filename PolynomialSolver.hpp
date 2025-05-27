@@ -4,11 +4,11 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <cmath>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 class PolynomialSolver {
     private:
         std::map<int, double> coefficients;
@@ -23,6 +23,27 @@ class PolynomialSolver {
         PolynomialSolver(const std::string& equation);
         void solve();
 };
+
+double MySqrt(double number, double tolerance = 1e-10) {
+    if (number < 0) {
+        std::cerr << "Error: Negative input not supported.\n";
+        return -1;
+    }
+    if (number == 0 || number == 1)
+        return number;
+
+    double guess = number / 2.0;
+
+    while (true) {
+        double nextGuess = (guess + number / guess) / 2.0;
+        if (std::abs(guess - nextGuess) < tolerance)
+            break;
+        guess = nextGuess;
+    }
+
+    return guess;
+}
+
 
 PolynomialSolver::PolynomialSolver(const std::string & equation) {
     this->parseEquation(equation);
@@ -45,7 +66,7 @@ void PolynomialSolver::reduceEquation() {
 }
 
 void PolynomialSolver::solveLinear() {
-    double solution = -this->coefficients.begin()->second / this->coefficients.rbegin()->second;
+    double solution = this->coefficients.begin()->second / this->coefficients.rbegin()->second;
     std::cout << solution << std::endl;
 }
 
@@ -58,18 +79,18 @@ void PolynomialSolver::solveQuadratic() {
     std::cout << "Discriminant is " << discriminant << std::endl;
     
     if (discriminant > 0) {
-        double root1 = (-b + sqrt(discriminant)) / (2*a);
-        double root2 = (-b - sqrt(discriminant)) / (2*a);
+        double root1 = (-b + MySqrt(discriminant)) / (2*a);
+        double root2 = (-b - MySqrt(discriminant)) / (2*a);
         std::cout << "is strictly positive, the two solutions are:\n" << root1 << std::endl << root2 << std::endl;
     } else if (discriminant == 0) {
         double root = -b / (2*a);
         std::cout << "the one solution is: " << root << std::endl;
     } else {
         double rootReal = -b / (2*a);
-        double rootImaginer = sqrt(discriminant) / (2*a);
+        double rootImaginer = MySqrt(std::abs(discriminant)) / (2*a);
         std::cout << "is strictly negative, the two solutions are: " << std::endl;
-        std::cout << rootReal << " + i" << rootImaginer << std::endl;
-        std::cout << rootReal << " - i" << rootImaginer << std::endl;
+        std::cout << rootReal << " + i * " << rootImaginer << std::endl;
+        std::cout << rootReal << " - i * " << rootImaginer << std::endl;
     }
 }
 
@@ -80,6 +101,11 @@ void PolynomialSolver::solve() {
         this->solveLinear();
     } else if (this->degree == 2) {
         this->solveQuadratic();
+    } else if(!this->degree) {
+        if (!this->coefficients.begin()->second)
+            std::cout << "Any real number is a solution." << std::endl;
+        else
+            std::cout << "There is no solution!." << std::endl;
     } else {
         std::cout << "The polynomial degree is strictly greater than 2, I can't solve." << std::endl;
     }
