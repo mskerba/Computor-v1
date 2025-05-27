@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <regex>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
